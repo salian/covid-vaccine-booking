@@ -23,9 +23,11 @@
 5. Alternatively follow [these](#using-docker) steps to run this script using docker
 6. Follow the steps. For more detailed guide: [Steps](#steps)
 
-### 2. On your Phone (Required for fetching OTP automatically)
-1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
-2. **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app)
+### 2. On your Phone (Optional; only needed if you want to automate OTP login)
+1. An Android phone is preferable to automate the OTP login entirely. On an iPhone, a single tap is needed to transfer the OTP.
+2. Create an account on https://kvdb.io/ and #kvdb-setup
+	- **Android Phone**: Follow either [Option 1: CoWIN OTP Retriever app](#option-1-cowin-otp-retriever) or [Option 2: IFTTT app](#option-2-ifttt)
+	- **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app). 
 
 <br>
 
@@ -33,10 +35,10 @@
   - [Before you start](#before-you-start)
   - [What this repository does](#what-this-repository-does)
   - [Setup Guide: Android](#setup-guide-for-android)
-    - [Option 1: IFTTT app](#option-1-ifttt)
-      - [Screenshots](#ifttt-steps-in-screenshots)
-    - [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever) 
+    - [Option 1: CoWIN OTP Retriever app](#option-1-cowin-otp-retriever) 
       - [Screenshots](#cowin-otp-retriever-steps-in-screenshots)
+    - [Option 2: IFTTT app](#option-2-ifttt)
+      - [Screenshots](#ifttt-steps-in-screenshots)
   - [Setup Guide: iOS](#setup-guide-for-ios)
     - [Using Shortcuts app](#using-shortcuts-app)
       - [Screenshots](#shortcuts-steps-in-screenshots)   
@@ -47,8 +49,9 @@
     - [Steps](#steps)
     - [How to run on windows](#how-to-run-on-windows)
     - [Using Docker](#using-docker)
+  - [Booking Strategies](#booking-strategies)
+  - [Rate Limits](#rate-limits)
   - [Troubleshooting common problems](#troubleshooting-common-problems)
-
 
 ## Before you start
 1. If you face any issues please refer to the [troubleshooting section](#troubleshooting-common-problems) at the end of this doc
@@ -62,13 +65,14 @@
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
 <img src="https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png" />
 
-#### How it works via IFTTT app on Android
-1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
-2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
-
 #### How it works via CoWIN OTP Retriever app on Android
 1. The [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk) has been created to automatically read the OTP SMS and then send it to the shared storage
 2. You only need to install and start the app, enter your CoWIN registered phone number, and then start the OTP listener.
+ 
+#### How it works via IFTTT app on Android
+1. IFTTT app can also be used if you are not comfortable with installing the CoWinOtpRetreiver app. However there is a slight delay in receiving OTPs with free versions of IFTTT.
+2. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
+3. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
 
 #### How it works via Shortcuts app on iOS
 1. [Shortcuts app](https://apps.apple.com/us/app/shortcuts/id915249334) is used to create an SMS trigger. The trigger happens when the OTP SMS is received
@@ -85,7 +89,11 @@
 <br>
 
 ## KVDB setup
-Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. You will need to update your personal key every 14 days or buy a pro account on kvdb.
+
+To automate OTP-based login, the CoWin login OTP you receive will be transferred from your phone to the script via an online service called KVDB.
+
+Regardless of Android or iOS, you will need to get a KVDB bucket, which will act as a key value store for your OTP messages coming from the CoWIN OTP Retriever, IFTTT or Shortcuts app. You will need to update this personal key every 14 days or buy a pro account on kvdb.
+
 Steps to get your own KVDB bucket:
 
 1. Go to https://kvdb.io/
@@ -96,7 +104,29 @@ Steps to get your own KVDB bucket:
 
 ## Setup Guide for Android
 
-### Option 1: IFTTT
+### Option 1: CoWIN OTP Retriever (Preferred)
+1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
+2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
+3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
+4. Grant sms access to allow the app to read CoWIN OTP sms.
+5. Enter 10 digit mobile number registered on the CoWIN portal. Also enter your personal KVDB bucket value.
+6. Switch ON the OTP Listener.
+7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
+8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
+	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
+
+#### CoWIN OTP Retriever steps in screenshots
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img alt="Step 1" src="https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 | |
+
+<br>
+
+### Option 2: IFTTT
 
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
 2. Create a new applet
@@ -136,28 +166,6 @@ Steps to get your own KVDB bucket:
 |<img alt="Step 4" src="https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 5 |
 |<img alt="Step 6" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 6 |<img alt="Step 7" src="https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png"> Step 7 |
 |<img alt="Step 8" src="https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png"> Step 9 |
-
-<br>
-
-### Option 2: CoWIN OTP Retriever
-1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
-2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
-3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
-4. Grant sms access to allow the app to read CoWIN OTP sms.
-5. Enter 10 digit mobile number registered on the CoWIN portal. Also enter your personal KVDB bucket value.
-6. Switch ON the OTP Listener.
-7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
-8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
-	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
-8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
-
-#### CoWIN OTP Retriever steps in screenshots
-| | | |
-|:-------------------------:|:-------------------------:|:-------------------------:|
-|<img alt="Step 1" src="https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png"> Step 3 |
-|<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
-|<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
-|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 | |
 
 <br>
 
@@ -421,6 +429,36 @@ docker run --rm \
 
 Refer [here](docs/AWS.md).
 
+## Booking Strategies
+
+Certain vaccination centers open at fixed times, while others open at unpredictable times. Here are a few booking strategies:
+
+   **Strategy 1** : Know your slot opening times
+   
+   Join a Telegram group that shares slot opening alerts in your district, and identify the times when slots opened for your preferred center over the past few days. Log in slightly before this time and keep the frequency high (~5 seconds) to increase the chances of getting a slot.
+   
+   **Strategy 2** : Look for late night single cancellations
+   
+   This works to book a single slot in large cities with many centers. There usually are a few cancellations late at night, at unpredictable times. Leave the script on searching for anywhere in the district with a fairly low frequency (~10 seconds or more) and automatic OTP login, to snipe up a cancelled slot. This won't work with multiple beneficiaries because the odds of two slots being cancelled at the same center are low. 
+
+
+## Rate Limits
+
+The CoWin API endpoints are rate-limited and making frequent requests leads to a temporary block. 
+
+The current rate limits are:
+
+1. Single-day Search: 100 queries in 300 seconds (5 minutes)
+2. Seven-day Search: 100 queries in 5 minutes OR 20 queries per session, whichever is lower
+
+For best results without being rate-limited, 
+1. use a lower frequency (8 seconds or higher), AND
+2. search for a single day using `dd-mm-yyyy` AND 
+3. search by district (and filter by pin codes) instead of searching directly by pin code.
+
+If you are blocked, wait for a while before trying again.
+
+
 ## Troubleshooting common problems
 
 ### Problem 1
@@ -464,6 +502,7 @@ Refer [here](docs/AWS.md).
 | | |
 |:-------------------------:|:-------------------------:|
 | <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
-   
+    
+   Also ensure your phone is not in battery saving mode or suspending the app when in the background.
 
    
